@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  background: #fff7ed;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(255, 247, 237, 0.9), rgba(255, 247, 237, 0.9)),
+    radial-gradient(circle at top left, #fecaca 0 18%, transparent 19%),
+    radial-gradient(circle at bottom right, #bfdbfe 0 20%, transparent 21%);
+  color: #1f2937;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
