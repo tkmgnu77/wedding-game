@@ -29,5 +29,11 @@ export default function Page() {
     return <CharacterCreate onCreated={setPlayer} />;
   }
 
-  return <HomeScreen player={player} onReset={() => setPlayer(null)} />;
+  return (
+    <HomeScreen
+      player={player}
+      onPlayerChange={setPlayer}
+      onReset={() => setPlayer(null)}
+    />
+  );
 }

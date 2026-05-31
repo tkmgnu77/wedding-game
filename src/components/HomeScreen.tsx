@@ -1,17 +1,45 @@
 "use client";
 
-import { clearPlayer } from "@/lib/playerStorage";
+import { useState } from "react";
+import {
+  type AdventureEvent,
+  getRandomAdventureEvent
+} from "@/data/adventureEvents";
+import { clearPlayer, savePlayer } from "@/lib/playerStorage";
 import { getJobById, type Player } from "@/types/player";
 
 type HomeScreenProps = {
   player: Player;
+  onPlayerChange: (player: Player) => void;
   onReset: () => void;
 };
 
-export function HomeScreen({ player, onReset }: HomeScreenProps) {
+export function HomeScreen({
+  player,
+  onPlayerChange,
+  onReset
+}: HomeScreenProps) {
+  const [latestEvent, setLatestEvent] = useState<AdventureEvent | null>(null);
   const job = getJobById(player.jobId);
+  const currentLevelExp = (player.level - 1) * 100;
   const nextLevelExp = player.level * 100;
-  const expPercent = Math.min(100, Math.round((player.exp / nextLevelExp) * 100));
+  const expToNextLevel = player.exp - currentLevelExp;
+  const expPercent = Math.min(100, Math.round((expToNextLevel / 100) * 100));
+
+  function handleAdventure() {
+    const event = getRandomAdventureEvent();
+    const nextExp = player.exp + event.exp;
+    const updatedPlayer: Player = {
+      ...player,
+      exp: nextExp,
+      level: Math.floor(nextExp / 100) + 1,
+      updatedAt: new Date().toISOString()
+    };
+
+    savePlayer(updatedPlayer);
+    setLatestEvent(event);
+    onPlayerChange(updatedPlayer);
+  }
 
   function handleReset() {
     clearPlayer();
@@ -59,6 +87,32 @@ export function HomeScreen({ player, onReset }: HomeScreenProps) {
               style={{ width: `${expPercent}%` }}
             />
           </div>
+        </section>
+
+        <section className="border-4 border-gray-800 bg-white p-4 shadow-pixel">
+          <button
+            type="button"
+            onClick={handleAdventure}
+            className="w-full border-4 border-gray-900 bg-emerald-600 px-4 py-4 font-mono text-base font-black text-white shadow-pixel transition active:translate-x-1 active:translate-y-1 active:shadow-none"
+          >
+            ぼうけんする
+          </button>
+
+          {latestEvent ? (
+            <div className="mt-4 border-4 border-gray-800 bg-amber-50 p-3">
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="font-mono text-sm font-black text-gray-900">
+                  {latestEvent.title}
+                </h2>
+                <p className="shrink-0 font-mono text-sm font-black text-emerald-700">
+                  +{latestEvent.exp} EXP
+                </p>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-gray-700">
+                {latestEvent.message}
+              </p>
+            </div>
+          ) : null}
         </section>
 
         <section className="border-4 border-gray-800 bg-white p-4 shadow-pixel">
